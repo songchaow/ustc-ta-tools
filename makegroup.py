@@ -8,12 +8,20 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 import os
 
+OUTPUT_FILENAME = '成绩考核登记表-分组.xlsx'
+INPUT_FILE_SUFFIX = '成绩考核登记表.xlsx'
+
 # 找到未分组的成绩考核登记表
-suffix = '成绩考核登记表.xlsx'
+def find_filename_with_suffix(s : str):
+    curr_dir_filelist = [f for f in os.listdir('.') if os.path.isfile(f)]
+    for f in curr_dir_filelist:
+        if f.endswith(INPUT_FILE_SUFFIX):
+            return f
+    return ''
 curr_dir_filelist = [f for f in os.listdir('.') if os.path.isfile(f)]
 filename = ''
 for f in curr_dir_filelist:
-    if f.endswith(suffix):
+    if f.endswith(INPUT_FILE_SUFFIX):
         filename = f
 if filename == '':
     print('表格未找到')
@@ -59,11 +67,11 @@ for r in main_ws.iter_rows(NUM_ROW_HEADER + 1, 300):
     for c in r:
         dst_ws = sub_group_sheets[remains]
         next_idx = NUM_ROW_HEADER + 1 + sub_group_sheet_stu_num[remains]
-        dst_ws.copy_cell_to_row(c.row, c.column, c, next_idx)
+        dst_ws.copy_cell_to_row(next_idx, c.column, c)
     sub_group_sheet_stu_num[remains] += 1
 
 
-grade_wb.save('test.xlsx')
+grade_wb.save(OUTPUT_FILENAME)
 print('分组后的表格已保存。各组的人数为：')
 for i in range(NUM_GROUP):
     print(sub_group_sheet_stu_num[i])

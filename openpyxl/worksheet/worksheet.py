@@ -8,6 +8,7 @@ from itertools import chain
 from operator import itemgetter
 from inspect import isgenerator
 from warnings import warn
+import copy
 
 # compatibility imports
 from openpyxl.compat import (
@@ -211,7 +212,44 @@ class Worksheet(_WorkbookChild):
             sel.insert(0, Selection(pane="topRight", activeCell=None, sqref=None))
             sel.insert(1, Selection(pane="bottomLeft", activeCell=None, sqref=None))
             view.selection = sel
+    def copy_cell_to_row(self, dst_row, column, other_ceil):
+        if dst_row < 1 or column < 1:
+            raise ValueError("Row or column values must be at least 1")
 
+        if not 0 < dst_row < 1048577:
+            raise ValueError("Row numbers must be between 1 and 1048576")
+        coordinate = (dst_row, column)
+        # if not coordinate in self._cells:
+        #     cell = Cell(self, row=row, column=column)
+        #     self._add_cell(cell)
+        # cell = self._cells[coordinate]
+        # cell2 = Cell(self, row=row, column=column)
+        other_ceil2 = copy.copy(other_ceil)
+        other_ceil2.row = dst_row
+        other_ceil2.column = column
+        #self._add_cell(other_ceil2)
+        self._cells[coordinate] = other_ceil2
+
+    def copy_cell(self, row, column, other_ceil):
+        if row < 1 or column < 1:
+            raise ValueError("Row or column values must be at least 1")
+
+        if not 0 < row < 1048577:
+            raise ValueError("Row numbers must be between 1 and 1048576")
+        coordinate = (row, column)
+        # if not coordinate in self._cells:
+        #     cell = Cell(self, row=row, column=column)
+        #     self._add_cell(cell)
+        # cell = self._cells[coordinate]
+        # cell2 = Cell(self, row=row, column=column)
+        other_ceil2 = copy.copy(other_ceil)
+        other_ceil2.row = row
+        other_ceil2.column = column
+        #self._add_cell(other_ceil2)
+        self._cells[coordinate] = copy.copy(other_ceil2)
+        
+
+        return
 
     def cell(self, row, column, value=None):
         """
