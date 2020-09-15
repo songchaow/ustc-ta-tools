@@ -31,7 +31,8 @@ if filename == '':
 grade_wb = load_workbook(filename)
 main_ws = grade_wb['All']
 if len(grade_wb.worksheets):
-    other_sheets = grade_wb.worksheets[1::]
+    other_sheets = grade_wb.worksheets.copy()
+    other_sheets.remove(grade_wb['All'])
     for s in other_sheets:
         grade_wb.remove(s)
 
