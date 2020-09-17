@@ -18,7 +18,8 @@ new_stu_names = set()
 
 # check existing names in grouped sheet
 grouped_wb = load_workbook(OUTPUT_FILENAME)
-all_student_sheet = grouped_wb['All']
+a = grouped_wb.sheetnames
+all_student_sheet = grouped_wb['All'] if 'All' in grouped_wb.sheetnames else grouped_wb['完整名单']
 for r in all_student_sheet.iter_rows(8, 400):
     if r[1].value is None:
         continue
@@ -31,7 +32,7 @@ if(input_filename == ''):
     print('未找到新登记表')
     exit(0)
 new_wb = load_workbook(input_filename)
-new_student_sheet = new_wb['All']
+new_student_sheet = new_wb['All'] if 'All' in new_wb.sheetnames else new_wb['完整名单']
 
 for r in new_student_sheet.iter_rows(8, 400):
     if r[1].value is None:
@@ -70,7 +71,7 @@ for idx, stuno in enumerate(existing_stu_names):
         # remove from the group
         for gidx in range(NUM_GROUP):
             group_str = chr(ord('A') + gidx) + '组'
-            curr_sheet = new_wb[group_str]
+            curr_sheet = grouped_wb[group_str]
             for ridx, r in enumerate(curr_sheet.iter_rows(8, 400)):
                 if r[1].value == stuno:
                     curr_sheet.delete_rows(ridx)
@@ -109,10 +110,11 @@ for new_stu in new_added_stu:
             min_group_num, min_idx = num_group_student[i], i
     group_str = chr(ord('A') + min_idx) + '组'
     print('分配学生' + new_stu[0] + '到' + group_str)
-    curr_sheet = new_wb[group_str]
+    curr_sheet = grouped_wb[group_str]
     dst_row_group = num_group_student[min_idx] + 8
     for r in new_student_sheet.iter_rows(src_row, src_row):
         for cell in r:
-            new_wb[group_str].copy_cell_to_row(dst_row_group, cell.column, cell)
+            curr_sheet.copy_cell_to_row(dst_row_group, cell.column, cell)
+    num_group_student[min_idx] += 1
 
-new_wb.save(OUTPUT_FILENAME)
+grouped_wb.save(OUTPUT_FILENAME)

@@ -29,10 +29,10 @@ if filename == '':
 
 # 打开表格，实施分组
 grade_wb = load_workbook(filename)
-main_ws = grade_wb['All']
+main_ws = grade_wb['All'] if 'All' in grade_wb.sheetnames else grade_wb['完整名单']
 if len(grade_wb.worksheets):
     other_sheets = grade_wb.worksheets.copy()
-    other_sheets.remove(grade_wb['All'])
+    other_sheets.remove(grade_wb['All'] if 'All' in grade_wb.sheetnames else grade_wb['完整名单'])
     for s in other_sheets:
         grade_wb.remove(s)
 
