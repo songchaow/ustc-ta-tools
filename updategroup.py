@@ -16,7 +16,9 @@ from utils import OUTPUT_FILENAME, INPUT_FILE_SUFFIX, NUM_GROUP
 existing_stu_names = set() # will be dirty
 new_stu_names = set()
 
-# check existing names in grouped sheet
+new_stu_names_ordered = []
+
+# existing names
 grouped_wb = load_workbook(OUTPUT_FILENAME)
 a = grouped_wb.sheetnames
 all_student_sheet = grouped_wb['All'] if 'All' in grouped_wb.sheetnames else grouped_wb['完整名单']
@@ -38,6 +40,7 @@ for r in new_student_sheet.iter_rows(8, 400):
     if r[1].value is None:
         continue
     new_stu_names.add(r[1].value)
+    new_stu_names_ordered.append(r[1].value)
 
 # check number of grouped students
 
@@ -81,7 +84,7 @@ for idx, stuno in enumerate(existing_stu_names):
 
 # find new added students
 new_added_stu = []
-for idx, stuno in enumerate(new_stu_names):
+for idx, stuno in enumerate(new_stu_names_ordered):
     if stuno not in existing_stu_names:
         print('发现新学生' + stuno)
         new_added_stu.append((stuno, idx))
